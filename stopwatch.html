@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch</title>
+    <style>
+        #stopwatch {
+            font-size: 75px;
+        }
+
+        #time-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgb(255, 255, 255);
+        }
+
+        #button-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 1rem 5rem;
+        }
+
+        #button-container > button {
+            margin: 0 2rem;
+            height: 2rem;
+            border-radius: .5rem;
+            border: none;
+            cursor: pointer;
+        }
+
+        #start {
+            background-color: limegreen;
+        }
+
+        #stop {
+            background-color: red;
+        }
+
+        #reset {
+            background-color: lightgray;
+        }
+
+        #color-selection {
+            display: flex;
+            flex-direction: column;
+        }
+
+        #color-selection > label {
+            margin-top: 1rem;
+        }
+
+        #toggle-instructions {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 1rem;
+            border: black solid .1rem;
+            border-radius: .5rem;
+            height: 2rem;
+            background-color: lightgray;
+            cursor: pointer;
+        }
+
+        #instructions {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="stopwatch">
+        <div id="time-container">
+            <p id="time">00:00:00:000</p>
+        </div>
+        <div id="button-container">
+            <button id="start">Start</button>
+            <button id="stop">Stop</button>
+            <button id="reset">Reset</button>
+        </div>
+    </div>
+    <div id="color-selection">
+        <label for="bg-color">Background Color:</label>
+        <input type="color" id="bg-color" value="#ffffff">
+
+        <label for="text-color">Text Color:</label>
+        <input type="color" id="text-color" value="#000000">
+    </div>
+
+    <button id="toggle-instructions">Instructions</button>
+    <div id="instructions">
+        <p>
+            Select whatever color you want for the background and text of the stopwatch. If you want to make the stopwatch transparent, set a color filter to the color of the background.
+        </p>
+        <p>
+            Open as a browser source in OBS. Set the url path to the HTML file and set the width and height to the resolution you want.
+        </p>
+        <p>
+            Timer is operated by pressing the buttons.
+        </p>
+        <p>
+            GLHF
+        </p>
+    </div>
+    <script>
+        let startTime;
+        let running = false;
+        let elapsed = 0;
+
+        function updateDisplay() {
+            const now = Date.now();
+            const timeElapsed = now - startTime + elapsed;
+            const milliseconds = Math.floor(timeElapsed % 1000);
+            const seconds = Math.floor((timeElapsed / 1000) % 60);
+            const minutes = Math.floor((timeElapsed / (1000 * 60)) % 60);
+            const hours = Math.floor((timeElapsed / (1000 * 60 * 60)) % 24);
+
+            document.getElementById("time").innerHTML = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}:${milliseconds.toString().padStart(3, '0')}`;
+        }
+
+        document.getElementById('start').addEventListener('click', function(){
+            if(!running){
+                startTime = Date.now();
+                interval = setInterval(updateDisplay, 1);
+                running = true;
+            }
+        });
+
+        document.getElementById('stop').addEventListener('click', function(){
+            if(running){
+                clearInterval(interval);
+                elapsed += Date.now() - startTime;
+                running = false;
+            }
+        });
+
+        document.getElementById('reset').addEventListener('click', function(){
+            clearInterval(interval);
+            elapsed = 0;
+            document.getElementById("time").innerHTML = "00:00:00:000";
+            running = false;
+        });
+
+        document.getElementById('bg-color').addEventListener('change', function(){
+            document.getElementById('time-container').style.backgroundColor = this.value;
+        });
+
+        document.getElementById('text-color').addEventListener('change', function(){
+            document.getElementById('time').style.color = this.value;
+        });
+
+        document.getElementById('toggle-instructions').addEventListener('click', function(){
+            const instructions = document.getElementById('instructions');
+            if (instructions.style.display === 'none') {
+                instructions.style.display = 'block';
+            } else {
+                instructions.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
